@@ -8,50 +8,100 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.text());
 app.use(bodyParser.json({type:'application/vnd.api+json'}));
-// Data
-// ===========================================================
-var yoda = {
-	name: "Yoda",
-	role: "Jedi Master",
-	age: 900,
-	forcePoints: 2000
-}
-var darthmaul = {
-	name: "Darth Maul",
-	role: "Sith Lord",
-	age: 200,
-	forcePoints: 1200
-}
-// Create one more data entry for the character Obi Wan Kenobi.
-// Enter any values you like for the parameters following the same format as the Yoda and Darth Maul character
-//
 
-// YOUR CODE GOES HERE
 
-//
+var mysql = require("mysql");
+
+var connection = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: '',
+  database: 'reservations'
+});
+
+connection.connect(function(err){
+	if (err) {
+		console.log(err);
+	}
+	else {
+		console.log('connection is good');
+	}
+});
 
 // Routes
 // ===========================================================
-app.get('/', function(req, res){
-	res.send("Welcome to the Star Wars Page!")
-})
-app.get('/yoda', function(req, res){
-	res.json(yoda);
+app.get('/', function (req, res, next) {
+
+
+res.sendFile(__dirname+"/index.html");
+
+
 });
-app.get('/yoda-html', function(req, res){
-	res.send("<h1>"+yoda.name+", "+yoda.role+"</h1>");
-});
-app.get('/darthmaul', function(req, res){
-	res.json(darthMaul);
+
+app.get('/makereserv.html', function(req, res){
+
+
+
+res.sendFile(__dirname+"/makereserv.html");
+
 })
 
-// Create a new Express route that leads users to the new Obi Wan Kenobi Data
-// Follow the same format as the Yoda and Darth Maul routes
-//
 
-// YOUR CODE GOES HERE
 
-//
+app.post('/submitRes', function(req, res){
+
+console.log(req.body.reserve_name);
+
+
+/// With our post variable insert into the tables or use those as select items from the tables
+
+var insertData = {customer_name: req.body.reserve_name, customer_email: req.body.reserve_email, phone_number: req.body.reserve_phone};
+
+
+	
+ connection.query('SELECT COUNT(*) FROM reservations',function(err,res){
+
+ 	var currentCount = (res[0]['COUNT(*)']);
+ 	console.log(currentCount);
+
+   if (currentCount < 5) {
+
+	connection.query("INSERT INTO reservations SET ?", insertData, function(err, result){
+ 	
+ 	});
+
+ 	 }
+
+  else {
+
+     connection.query("INSERT INTO waitlist SET ?", insertData, function(err, result){
+
+
+ 		 });
+ 	}
+
+
+});
+
+res.redirect("/");
+
+});
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
 
 
 
